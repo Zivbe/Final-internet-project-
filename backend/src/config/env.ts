@@ -22,5 +22,7 @@ export const env = {
   googleClientId: process.env.GOOGLE_CLIENT_ID ?? "",
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
   googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL ?? "",
-  sessionSecret: process.env.SESSION_SECRET ?? "replace_me"
+  sessionSecret: process.env.SESSION_SECRET ?? "replace_me",
+  openaiApiKey: process.env.OPENAI_API_KEY ?? "",
+  openaiModel: process.env.OPENAI_MODEL ?? "gpt-4o-mini"
 };

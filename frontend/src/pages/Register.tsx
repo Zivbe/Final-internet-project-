@@ -14,17 +14,17 @@ export const RegisterPage = () => {
     setError(null);
     try {
       await register(username, password);
-      navigate("/dashboard");
+      navigate("/feed");
     } catch (err) {
       setError((err as Error).message);
     }
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>Create account</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
+      <form onSubmit={handleSubmit} className="card stack">
+        <label className="stack">
           Username
           <input
             value={username}
@@ -32,7 +32,7 @@ export const RegisterPage = () => {
             autoComplete="username"
           />
         </label>
-        <label>
+        <label className="stack">
           Password
           <input
             type="password"
