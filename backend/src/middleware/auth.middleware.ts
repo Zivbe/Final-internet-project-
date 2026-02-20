@@ -6,6 +6,7 @@ export type AuthenticatedRequest = Request & {
     id: string;
     username: string;
   };
+  file?: Express.Multer.File;
 };
 
 export const requireAuth = (

@@ -20,13 +20,18 @@ export const configurePassport = (): void => {
           const googleId = profile.id;
           const email = profile.emails?.[0]?.value ?? "";
           const displayName = profile.displayName || email || "google-user";
+          const photoUrl = profile.photos?.[0]?.value ?? "";
 
           let user = await User.findOne({ googleId });
           if (!user) {
             user = await User.create({
               username: displayName,
-              googleId
+              googleId,
+              photoUrl
             });
+          } else if (!user.photoUrl && photoUrl) {
+            user.photoUrl = photoUrl;
+            await user.save();
           }
 
           return done(null, user);

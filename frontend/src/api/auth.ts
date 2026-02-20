@@ -1,6 +1,7 @@
 import type { AuthResponse } from "../types/auth";
+import { API_BASE_URL } from "../config";
 
-const API_URL = "http://localhost:4000/api/auth";
+const API_URL = `${API_BASE_URL}/api/auth`;
 
 const request = async (path: string, body?: object): Promise<AuthResponse> => {
   const res = await fetch(`${API_URL}${path}`, {
@@ -34,3 +35,5 @@ export const logout = async () => {
     credentials: "include"
   });
 };
+
+export const getGoogleAuthUrl = () => `${API_URL}/google`;

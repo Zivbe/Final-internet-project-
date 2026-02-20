@@ -10,7 +10,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "noImplicitAny": false
   },
-  "include": ["src/**/*.ts", "jest.config.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "jest.config.ts"]
 }

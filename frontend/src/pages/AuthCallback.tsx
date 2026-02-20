@@ -16,7 +16,7 @@ export const AuthCallbackPage = () => {
       const payload = JSON.parse(atob(base64));
       setSession({
         accessToken,
-        user: { id: payload.sub, username: payload.username }
+        user: { id: payload.sub, username: payload.username, photoUrl: payload.photoUrl ?? "" }
       });
       navigate("/dashboard");
     } else {

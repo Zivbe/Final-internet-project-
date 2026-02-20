@@ -2,6 +2,9 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
 import { AuthCallbackPage } from "./pages/AuthCallback";
+import { DashboardPage } from "./pages/Dashboard";
+import { CommentsPage } from "./pages/Comments";
+import { ProfilePage } from "./pages/Profile";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 
@@ -18,7 +21,23 @@ export const App = () => {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <div>Authenticated!</div>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/images/:imageId/comments"
+        element={
+          <ProtectedRoute>
+            <CommentsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile/:userId"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
           </ProtectedRoute>
         }
       />

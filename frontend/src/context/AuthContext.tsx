@@ -20,6 +20,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const setSession = (data: AuthResponse) => {
     setUser(data.user);
     setAccessToken(data.accessToken);
+    if (data.accessToken) {
+      localStorage.setItem("accessToken", data.accessToken);
+    }
   };
 
   const login = async (username: string, password: string) => {
@@ -36,16 +39,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await authApi.logout();
     setUser(null);
     setAccessToken(null);
+    localStorage.removeItem("accessToken");
   };
 
   useEffect(() => {
-    authApi
-      .refresh()
-      .then(setSession)
-      .catch(() => {
-        setUser(null);
-        setAccessToken(null);
-      });
+    // Try to get token from localStorage first
+    const storedToken = localStorage.getItem("accessToken");
+    if (storedToken) {
+      // Decode token to get user info (basic approach)
+      try {
+        const payloadSegment = storedToken.split(".")[1] || "";
+        const base64 = payloadSegment.replace(/-/g, "+").replace(/_/g, "/");
+        const payload = JSON.parse(atob(base64));
+        setUser({ id: payload.sub, username: payload.username, photoUrl: payload.photoUrl ?? "" });
+        setAccessToken(storedToken);
+        authApi.refresh().then(setSession).catch(() => {});
+      } catch {
+        // If token is invalid, try refresh
+        authApi
+          .refresh()
+          .then(setSession)
+          .catch(() => {
+            setUser(null);
+            setAccessToken(null);
+            localStorage.removeItem("accessToken");
+          });
+      }
+    } else {
+      // No stored token, try refresh
+      authApi
+        .refresh()
+        .then(setSession)
+        .catch(() => {
+          setUser(null);
+          setAccessToken(null);
+        });
+    }
   }, []);
 
   const value = useMemo(

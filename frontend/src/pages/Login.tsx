@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { getGoogleAuthUrl } from "../api/auth";
 
 export const LoginPage = () => {
   const { login } = useAuth();
@@ -21,40 +22,46 @@ export const LoginPage = () => {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Username
-          <input
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-            autoComplete="username"
-          />
-        </label>
-        <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            autoComplete="current-password"
-          />
-        </label>
-        {error ? <p>{error}</p> : null}
-        <button type="submit">Login</button>
-      </form>
-      <div>
-        <button
-          type="button"
-          onClick={() => (window.location.href = "http://localhost:4000/api/auth/google")}
-        >
-          Continue with Google
-        </button>
+    <div className="auth-page">
+      <div className="auth-card">
+        <h1>Welcome back</h1>
+        <p className="auth-subtitle">Sign in to continue to your dashboard.</p>
+        <form onSubmit={handleSubmit} className="auth-form">
+          <label>
+            Username
+            <input
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              autoComplete="username"
+            />
+          </label>
+          <label>
+            Password
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="current-password"
+            />
+          </label>
+          {error ? <p className="form-error">{error}</p> : null}
+          <button type="submit" className="btn btn-primary">
+            Login
+          </button>
+        </form>
+        <div className="oauth-section">
+          <button
+            type="button"
+            className="btn btn-google"
+            onClick={() => (window.location.href = getGoogleAuthUrl())}
+          >
+            Continue with Google
+          </button>
+        </div>
+        <p className="auth-switch">
+          Need an account? <Link to="/register">Register</Link>
+        </p>
       </div>
-      <p>
-        Need an account? <Link to="/register">Register</Link>
-      </p>
     </div>
   );
 };

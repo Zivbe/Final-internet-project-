@@ -15,7 +15,7 @@ export const registerUser = async (username: string, password: string) => {
 
   const passwordHash = await hashPassword(password);
   const user = await User.create({ username, passwordHash });
-  const tokens = issueTokens(user.id, user.username);
+  const tokens = issueTokens(user.id, user.username, user.photoUrl ?? "");
   user.refreshTokenHashes = [
     ...(user.refreshTokenHashes ?? []),
     hashRefreshToken(tokens.refreshToken)
@@ -35,7 +35,7 @@ export const loginUser = async (username: string, password: string) => {
     throw new Error("Invalid credentials");
   }
 
-  const tokens = issueTokens(user.id, user.username);
+  const tokens = issueTokens(user.id, user.username, user.photoUrl ?? "");
   user.refreshTokenHashes = [
     ...(user.refreshTokenHashes ?? []),
     hashRefreshToken(tokens.refreshToken)
@@ -61,7 +61,7 @@ export const rotateRefreshToken = async (
   }
 
   user.refreshTokenHashes = stored.filter((hash) => hash !== refreshHash);
-  const tokens = issueTokens(user.id, username);
+  const tokens = issueTokens(user.id, username, user.photoUrl ?? "");
   const newHash = hashRefreshToken(tokens.refreshToken);
   user.refreshTokenHashes.push(newHash);
   await user.save();
@@ -85,7 +85,7 @@ export const revokeRefreshToken = async (
   await user.save();
 };
 
-const issueTokens = (userId: string, username: string) => {
+const issueTokens = (userId: string, username: string, photoUrl: string) => {
   const payload: JwtPayload = { sub: userId, username };
   const accessToken = signAccessToken(payload);
   const refreshToken = signRefreshToken(payload);
@@ -93,6 +93,6 @@ const issueTokens = (userId: string, username: string) => {
   return {
     accessToken,
     refreshToken,
-    user: { id: userId, username }
+    user: { id: userId, username, photoUrl }
   };
 };
