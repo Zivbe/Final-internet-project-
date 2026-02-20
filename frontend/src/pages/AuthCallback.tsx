@@ -11,14 +11,18 @@ export const AuthCallbackPage = () => {
     const params = new URLSearchParams(location.search);
     const accessToken = params.get("accessToken");
     if (accessToken) {
-      const payloadSegment = accessToken.split(".")[1] || "";
-      const base64 = payloadSegment.replace(/-/g, "+").replace(/_/g, "/");
-      const payload = JSON.parse(atob(base64));
-      setSession({
-        accessToken,
-        user: { id: payload.sub, username: payload.username }
-      });
-      navigate("/dashboard");
+      try {
+        const payloadSegment = accessToken.split(".")[1] || "";
+        const base64 = payloadSegment.replace(/-/g, "+").replace(/_/g, "/");
+        const payload = JSON.parse(atob(base64));
+        setSession({
+          accessToken,
+          user: { id: payload.sub, username: payload.username }
+        });
+        navigate("/feed");
+      } catch {
+        navigate("/login");
+      }
     } else {
       navigate("/login");
     }

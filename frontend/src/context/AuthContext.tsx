@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { AuthResponse, User } from "../types/auth";
 import * as authApi from "../api/auth";
+import * as usersApi from "../api/users";
 
 type AuthContextValue = {
   user: User | null;
@@ -47,6 +48,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setAccessToken(null);
       });
   }, []);
+
+  useEffect(() => {
+    if (!accessToken) {
+      return;
+    }
+    usersApi
+      .getMe(accessToken)
+      .then((profile) => setUser(profile))
+      .catch(() => {
+        // If profile fetch fails, keep current auth state.
+      });
+  }, [accessToken]);
 
   const value = useMemo(
     () => ({ user, accessToken, login, register, logout, setSession }),

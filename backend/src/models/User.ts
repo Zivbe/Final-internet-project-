@@ -5,6 +5,7 @@ const userSchema = new Schema(
     username: { type: String, required: true, unique: true, trim: true },
     passwordHash: { type: String },
     googleId: { type: String, unique: true, sparse: true },
+    avatarPath: { type: String },
     refreshTokenHashes: { type: [String], default: [] }
   },
   { timestamps: true }

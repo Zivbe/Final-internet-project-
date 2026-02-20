@@ -14,17 +14,17 @@ export const LoginPage = () => {
     setError(null);
     try {
       await login(username, password);
-      navigate("/dashboard");
+      navigate("/feed");
     } catch (err) {
       setError((err as Error).message);
     }
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
+      <form onSubmit={handleSubmit} className="card stack">
+        <label className="stack">
           Username
           <input
             value={username}
@@ -32,7 +32,7 @@ export const LoginPage = () => {
             autoComplete="username"
           />
         </label>
-        <label>
+        <label className="stack">
           Password
           <input
             type="password"
@@ -43,15 +43,14 @@ export const LoginPage = () => {
         </label>
         {error ? <p>{error}</p> : null}
         <button type="submit">Login</button>
-      </form>
-      <div>
         <button
           type="button"
+          className="secondary"
           onClick={() => (window.location.href = "http://localhost:4000/api/auth/google")}
         >
           Continue with Google
         </button>
-      </div>
+      </form>
       <p>
         Need an account? <Link to="/register">Register</Link>
       </p>
