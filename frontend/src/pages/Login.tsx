@@ -24,8 +24,8 @@ export const LoginPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Welcome back</h1>
-        <p className="auth-subtitle">Sign in to continue to your dashboard.</p>
+        <h1>Facebook</h1>
+        <p className="auth-subtitle">Log in to see what your friends are sharing.</p>
         <form onSubmit={handleSubmit} className="auth-form">
           <label>
             Username
@@ -46,7 +46,7 @@ export const LoginPage = () => {
           </label>
           {error ? <p className="form-error">{error}</p> : null}
           <button type="submit" className="btn btn-primary">
-            Login
+            Log In
           </button>
         </form>
         <div className="oauth-section">

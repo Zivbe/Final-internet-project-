@@ -23,8 +23,8 @@ export const RegisterPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Create account</h1>
-        <p className="auth-subtitle">Join and start sharing your images.</p>
+        <h1>Sign Up</h1>
+        <p className="auth-subtitle">It is free and always will be.</p>
         <form onSubmit={handleSubmit} className="auth-form">
           <label>
             Username

@@ -95,7 +95,17 @@ export const ProfilePage = () => {
 
   return (
     <div className="dashboard-page">
-      <section className="panel">
+      <aside className="panel panel-left">
+        <h2>Navigation</h2>
+        <p>
+          <Link to="/dashboard">News Feed</Link>
+        </p>
+        <p>
+          <Link to={`/profile/${targetUserId}`}>Profile</Link>
+        </p>
+      </aside>
+
+      <section className="panel panel-main">
         <div className="feed-header">
           <h2>User details</h2>
           <Link to="/dashboard">Back to feed</Link>
@@ -136,7 +146,7 @@ export const ProfilePage = () => {
         {status ? <p className="status">{status}</p> : null}
       </section>
 
-      <section className="panel">
+      <section className="panel panel-main">
         <h2>{canEdit ? "My posts" : "User posts"}</h2>
         <div className="image-grid">
           {images.map((image) => (

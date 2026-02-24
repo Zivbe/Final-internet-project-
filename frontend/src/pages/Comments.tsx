@@ -49,7 +49,14 @@ export const CommentsPage = () => {
 
   return (
     <div className="dashboard-page">
-      <section className="panel">
+      <aside className="panel panel-left">
+        <h2>Navigation</h2>
+        <p>
+          <Link to="/dashboard">News Feed</Link>
+        </p>
+      </aside>
+
+      <section className="panel panel-main">
         <div className="feed-header">
           <h2>Comments</h2>
           <Link to="/dashboard">Back to feed</Link>
