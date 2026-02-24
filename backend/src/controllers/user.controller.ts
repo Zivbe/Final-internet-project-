@@ -23,6 +23,40 @@ export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) =
   });
 };
 
+export const updateMyProfile = async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const username = (req.body?.username as string | undefined)?.trim();
+  if (!username) {
+    return res.status(400).json({ message: "Username is required" });
+  }
+
+  const existing = await User.findOne({ username, _id: { $ne: req.user.id } });
+  if (existing) {
+    return res.status(400).json({ message: "Username already in use" });
+  }
+
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  user.username = username;
+  await user.save();
+
+  return res.json({
+    message: "Profile updated",
+    user: {
+      id: user._id.toString(),
+      username: user.username,
+      photoUrl: user.photoUrl || "",
+      createdAt: user.createdAt
+    }
+  });
+};
+
 export const getUserProfile = async (req: AuthenticatedRequest, res: Response) => {
   const { userId } = req.params;
   const page = parseInt(req.query.page as string) || 1;

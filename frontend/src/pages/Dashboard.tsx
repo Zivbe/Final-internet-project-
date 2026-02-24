@@ -9,7 +9,7 @@ import {
   updateImage,
   uploadImage
 } from "../api/images";
-import { getFeedInsights, type AiInsights } from "../api/ai";
+import { askFeedQuestion, getFeedInsights, type AiInsights } from "../api/ai";
 import { toggleLike } from "../api/likes";
 import { searchImages, searchUsers, type User } from "../api/search";
 import { useAuth } from "../context/AuthContext";
@@ -32,6 +32,8 @@ export const DashboardPage = () => {
   const [editFile, setEditFile] = useState<File | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [insights, setInsights] = useState<AiInsights | null>(null);
+  const [aiQuestion, setAiQuestion] = useState("");
+  const [aiAnswer, setAiAnswer] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const hasSearch = useMemo(() => searchTerm.trim().length > 0, [searchTerm]);
@@ -157,6 +159,22 @@ export const DashboardPage = () => {
     }
   };
 
+  const handleAskAi = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const question = aiQuestion.trim();
+    if (!question) return;
+    try {
+      setLoading(true);
+      setAiAnswer(null);
+      const result = await askFeedQuestion(question, feedMode);
+      setAiAnswer(result.answer);
+    } catch (err) {
+      setStatus((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="dashboard-page">
       <header className="dashboard-header">
@@ -220,6 +238,22 @@ export const DashboardPage = () => {
         ) : (
           <p className="muted">Click analyze to generate AI-based feed insights.</p>
         )}
+
+        <form onSubmit={handleAskAi} className="inline-form">
+          <input
+            value={aiQuestion}
+            onChange={(event) => setAiQuestion(event.target.value)}
+            placeholder="Ask AI about this feed (free text)"
+          />
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            Ask AI
+          </button>
+        </form>
+        {aiAnswer ? (
+          <div className="ai-insights">
+            <p><strong>Answer:</strong> {aiAnswer}</p>
+          </div>
+        ) : null}
       </section>
 
       <section className="panel">

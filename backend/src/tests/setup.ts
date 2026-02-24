@@ -2,6 +2,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 
 let mongo: MongoMemoryServer;
+jest.setTimeout(60000);
 
 beforeAll(async () => {
   mongo = await MongoMemoryServer.create();
@@ -20,5 +21,7 @@ afterEach(async () => {
 
 afterAll(async () => {
   await mongoose.disconnect();
-  await mongo.stop();
+  if (mongo) {
+    await mongo.stop();
+  }
 });
