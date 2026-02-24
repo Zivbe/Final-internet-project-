@@ -194,7 +194,20 @@ export const DashboardPage = () => {
         </div>
       </header>
 
-      <section className="panel">
+      <aside className="panel panel-left">
+        <h2>Navigation</h2>
+        <p>
+          <Link to="/dashboard">News Feed</Link>
+        </p>
+        {user?.id ? (
+          <p>
+            <Link to={`/profile/${user.id}`}>My Profile</Link>
+          </p>
+        ) : null}
+        <p className="muted">Vintage mode: 2008</p>
+      </aside>
+
+      <section className="panel panel-main">
         <h2>Upload Image</h2>
         <form onSubmit={handleUpload} className="inline-form">
           <input
@@ -213,7 +226,7 @@ export const DashboardPage = () => {
         </form>
       </section>
 
-      <section className="panel">
+      <section className="panel panel-right">
         <div className="feed-header">
           <h2>AI Insights</h2>
           <button type="button" className="btn btn-secondary" disabled={loading} onClick={handleGenerateInsights}>
@@ -256,7 +269,7 @@ export const DashboardPage = () => {
         ) : null}
       </section>
 
-      <section className="panel">
+      <section className="panel panel-main">
         <h2>Search</h2>
         <form onSubmit={handleSearch} className="inline-form">
           <input
@@ -294,7 +307,7 @@ export const DashboardPage = () => {
         ) : null}
       </section>
 
-      <section className="panel">
+      <section className="panel panel-main">
         <div className="feed-header">
           <h2>{hasSearch ? "Search results" : "Latest images"}</h2>
           {!hasSearch ? (
