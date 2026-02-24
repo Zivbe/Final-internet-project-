@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { API_BASE_URL } from "../config";
 import {
@@ -35,22 +35,68 @@ export const DashboardPage = () => {
   const [aiQuestion, setAiQuestion] = useState("");
   const [aiAnswer, setAiAnswer] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isFetchingPage, setIsFetchingPage] = useState(false);
+  const feedSentinelRef = useRef<HTMLDivElement | null>(null);
+  const latestRequestIdRef = useRef(0);
+  const isFetchingRef = useRef(false);
 
   const hasSearch = useMemo(() => searchTerm.trim().length > 0, [searchTerm]);
 
-  const loadImages = async (targetPage: number, reset = false) => {
-    const fetchFn = feedMode === "mine" ? getMyImages : getImages;
-    const data = await fetchFn(targetPage, 12);
-    setImages((prev) => (reset ? data.images : [...prev, ...data.images]));
-    setPage(targetPage);
-    setHasMore(targetPage < data.pagination.pages);
-  };
+  const loadImages = useCallback(
+    async (targetPage: number, reset = false) => {
+      const requestId = ++latestRequestIdRef.current;
+      isFetchingRef.current = true;
+      setIsFetchingPage(true);
+      try {
+        const fetchFn = feedMode === "mine" ? getMyImages : getImages;
+        const data = await fetchFn(targetPage, 12);
+        if (latestRequestIdRef.current !== requestId) {
+          return;
+        }
+        setImages((prev) => (reset ? data.images : [...prev, ...data.images]));
+        setPage(targetPage);
+        setHasMore(targetPage < data.pagination.pages);
+      } catch (err) {
+        if (latestRequestIdRef.current === requestId) {
+          setStatus((err as Error).message);
+        }
+      } finally {
+        if (latestRequestIdRef.current === requestId) {
+          isFetchingRef.current = false;
+          setIsFetchingPage(false);
+        }
+      }
+    },
+    [feedMode]
+  );
 
   useEffect(() => {
     setUsers([]);
     setSearchTerm("");
-    loadImages(1, true).catch((err) => setStatus((err as Error).message));
-  }, [feedMode]);
+    loadImages(1, true);
+  }, [feedMode, loadImages]);
+
+  useEffect(() => {
+    if (hasSearch) return;
+    const sentinel = feedSentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting && hasMore && !isFetchingRef.current) {
+          loadImages(page + 1);
+        }
+      },
+      { root: null, rootMargin: "256px 0px", threshold: 0 }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasSearch, hasMore, loadImages, page]);
 
   const handleUpload = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -287,7 +333,7 @@ export const DashboardPage = () => {
               onClick={() => {
                 setSearchTerm("");
                 setUsers([]);
-                loadImages(1, true).catch((err) => setStatus((err as Error).message));
+                loadImages(1, true);
               }}
             >
               Clear
@@ -402,14 +448,12 @@ export const DashboardPage = () => {
             );
           })}
         </div>
-        {!hasSearch && hasMore ? (
-          <button
-            type="button"
-            className="btn btn-secondary load-more"
-            onClick={() => loadImages(page + 1)}
-          >
-            Load more
-          </button>
+        {!hasSearch ? (
+          <>
+            <div ref={feedSentinelRef} className="feed-sentinel" aria-hidden />
+            {isFetchingPage ? <p className="muted">Loading more posts...</p> : null}
+            {!hasMore && images.length > 0 ? <p className="muted">You have reached the end.</p> : null}
+          </>
         ) : null}
         {images.length === 0 ? <p className="muted">No images yet.</p> : null}
       </section>
