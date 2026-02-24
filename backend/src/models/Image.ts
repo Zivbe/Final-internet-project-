@@ -2,11 +2,11 @@ import mongoose, { Schema, type InferSchemaType } from "mongoose";
 
 const imageSchema = new Schema(
   {
-    filename: { type: String, required: true },
-    originalName: { type: String, required: true },
-    mimeType: { type: String, required: true },
-    size: { type: Number, required: true },
-    path: { type: String, required: true },
+    filename: { type: String, default: "" },
+    originalName: { type: String, default: "" },
+    mimeType: { type: String, default: "" },
+    size: { type: Number, default: 0 },
+    path: { type: String, default: "" },
     uploadedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     description: { type: String },
     tags: { type: [String], default: [] },

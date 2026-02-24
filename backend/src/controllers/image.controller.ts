@@ -15,7 +15,7 @@ export const formatImageResponse = (image: any): ImageResponse => {
     id: image._id.toString(),
     filename: image.filename,
     originalName: image.originalName,
-    url: `/uploads/images/${image.filename}`,
+    url: image.filename ? `/uploads/images/${image.filename}` : "",
     uploadedBy: uploadedBy ? {
       id: uploadedBy._id.toString(),
       username: uploadedBy.username
@@ -33,19 +33,23 @@ export const formatImageResponse = (image: any): ImageResponse => {
 };
 
 export const uploadImage = async (req: AuthenticatedRequest, res: Response) => {
-  if (!req.file || !req.user) {
-    return res.status(400).json({ message: "No file uploaded" });
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const description = typeof req.body?.description === "string" ? req.body.description.trim() : "";
+  if (!req.file && !description) {
+    return res.status(400).json({ message: "Either image or text is required" });
   }
 
   try {
     const image = await Image.create({
-      filename: req.file.filename,
-      originalName: req.file.originalname,
-      mimeType: req.file.mimetype,
-      size: req.file.size,
-      path: req.file.path,
+      filename: req.file?.filename ?? "",
+      originalName: req.file?.originalname ?? "",
+      mimeType: req.file?.mimetype ?? "",
+      size: req.file?.size ?? 0,
+      path: req.file?.path ?? "",
       uploadedBy: req.user.id,
-      description: req.body.description || "",
+      description,
       tags: req.body.tags ? JSON.parse(req.body.tags) : []
     });
 

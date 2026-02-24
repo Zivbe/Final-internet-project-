@@ -100,8 +100,8 @@ export const DashboardPage = () => {
 
   const handleUpload = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!selectedFile) {
-      setStatus("Select an image first.");
+    if (!selectedFile && !description.trim()) {
+      setStatus("Add text or select an image first.");
       return;
     }
 
@@ -254,7 +254,7 @@ export const DashboardPage = () => {
       </aside>
 
       <section className="panel panel-main">
-        <h2>Upload Image</h2>
+        <h2>Create Post</h2>
         <form onSubmit={handleUpload} className="inline-form">
           <input
             type="file"
@@ -382,7 +382,7 @@ export const DashboardPage = () => {
             const isOwner = !!user && image.uploadedBy.id === user.id;
             return (
               <article key={image.id} className="image-card">
-                <img src={toImageUrl(image.url)} alt={image.originalName} />
+                {image.url ? <img src={toImageUrl(image.url)} alt={image.originalName || "post"} /> : null}
                 <div className="image-card-body">
                   <p className="image-meta">
                     <strong>
