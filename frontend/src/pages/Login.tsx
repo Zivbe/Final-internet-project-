@@ -24,6 +24,8 @@ export const LoginPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
+        <h1>Facebook</h1>
+        <p className="auth-subtitle">Log in to see what your friends are sharing.</p>
         <h1>BZ connect</h1>
         <p className="auth-subtitle">Log in to see what your friends are sharing.</p>
         <form onSubmit={handleSubmit} className="auth-form">

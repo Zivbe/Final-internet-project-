@@ -24,12 +24,14 @@ export type Image = {
 };
 
 export const uploadImage = async (
-  file: File,
+  file?: File | null,
   description?: string,
   tags?: string[]
 ): Promise<{ message: string; image: Image }> => {
   const formData = new FormData();
-  formData.append("image", file);
+  if (file) {
+    formData.append("image", file);
+  }
   if (description) formData.append("description", description);
   if (tags) formData.append("tags", JSON.stringify(tags));
 

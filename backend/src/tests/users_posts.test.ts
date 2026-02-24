@@ -66,6 +66,19 @@ describe("Users and Posts API", () => {
     expect(del.status).toBe(204);
   });
 
+  it("creates a text-only status post", async () => {
+    const { token } = await registerAndLogin("user_status_only");
+
+    const create = await request(app)
+      .post("/api/images/upload")
+      .set("Authorization", `Bearer ${token}`)
+      .field("description", "status without image");
+
+    expect(create.status).toBe(201);
+    expect(create.body.image.description).toBe("status without image");
+    expect(create.body.image.url).toBe("");
+  });
+
   it("prevents deleting another user's post", async () => {
     const owner = await registerAndLogin("user_posts_owner");
     const other = await registerAndLogin("user_posts_other");

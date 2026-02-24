@@ -1,10 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { AuthResponse, User } from "../types/auth";
 import * as authApi from "../api/auth";
 
 type AuthContextValue = {
   user: User | null;
   accessToken: string | null;
+  initializing: boolean;
   login: (username: string, password: string) => Promise<void>;
   register: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -16,13 +17,18 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [initializing, setInitializing] = useState(true);
+  const hasSessionRef = useRef(false);
 
   const setSession = (data: AuthResponse) => {
+    hasSessionRef.current = true;
     setUser(data.user);
     setAccessToken(data.accessToken);
     if (data.accessToken) {
       localStorage.setItem("accessToken", data.accessToken);
     }
+    localStorage.setItem("user", JSON.stringify(data.user));
+    setInitializing(false);
   };
 
   const login = async (username: string, password: string) => {
@@ -37,49 +43,76 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     await authApi.logout();
+    hasSessionRef.current = false;
     setUser(null);
     setAccessToken(null);
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
+    setInitializing(false);
   };
 
   useEffect(() => {
-    // Try to get token from localStorage first
+    let cancelled = false;
+
+    // Restore from localStorage first for fast startup
     const storedToken = localStorage.getItem("accessToken");
-    if (storedToken) {
-      // Decode token to get user info (basic approach)
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
       try {
-        const payloadSegment = storedToken.split(".")[1] || "";
-        const base64 = payloadSegment.replace(/-/g, "+").replace(/_/g, "/");
-        const payload = JSON.parse(atob(base64));
-        setUser({ id: payload.sub, username: payload.username, photoUrl: payload.photoUrl ?? "" });
-        setAccessToken(storedToken);
-        authApi.refresh().then(setSession).catch(() => {});
+        hasSessionRef.current = true;
+        setUser(JSON.parse(storedUser) as User);
       } catch {
-        // If token is invalid, try refresh
-        authApi
-          .refresh()
-          .then(setSession)
-          .catch(() => {
-            setUser(null);
-            setAccessToken(null);
-            localStorage.removeItem("accessToken");
-          });
+        localStorage.removeItem("user");
       }
-    } else {
-      // No stored token, try refresh
+    }
+
+    if (storedToken) {
+      setAccessToken(storedToken);
       authApi
         .refresh()
         .then(setSession)
         .catch(() => {
+          if (hasSessionRef.current || cancelled) {
+            return;
+          }
           setUser(null);
           setAccessToken(null);
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("user");
+        })
+        .finally(() => {
+          if (!cancelled) {
+            setInitializing(false);
+          }
+        });
+    } else {
+      authApi
+        .refresh()
+        .then(setSession)
+        .catch(() => {
+          if (hasSessionRef.current || cancelled) {
+            return;
+          }
+          setUser(null);
+          setAccessToken(null);
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("user");
+        })
+        .finally(() => {
+          if (!cancelled) {
+            setInitializing(false);
+          }
         });
     }
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const value = useMemo(
-    () => ({ user, accessToken, login, register, logout, setSession }),
-    [user, accessToken]
+    () => ({ user, accessToken, initializing, login, register, logout, setSession }),
+    [user, accessToken, initializing]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

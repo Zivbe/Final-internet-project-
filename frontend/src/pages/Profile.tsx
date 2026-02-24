@@ -151,7 +151,7 @@ export const ProfilePage = () => {
         <div className="image-grid">
           {images.map((image) => (
             <article key={image.id} className="image-card">
-              <img src={toAssetUrl(image.url)} alt={image.originalName} />
+              {image.url ? <img src={toAssetUrl(image.url)} alt={image.originalName || "post"} /> : null}
               <div className="image-card-body">
                 <p>{image.description || "No description"}</p>
                 <p className="muted">

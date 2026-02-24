@@ -9,7 +9,11 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 
 export const App = () => {
-  const { user } = useAuth();
+  const { user, initializing } = useAuth();
+
+  if (initializing) {
+    return <div className="muted">Loading...</div>;
+  }
 
   return (
     <Routes>
