@@ -8,54 +8,9 @@ import { User } from "../models/User.js";
 
 export const authRouter = Router();
 
-/**
- * @openapi
- * /api/auth/register:
- *   post:
- *     summary: Register a new user
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       201:
- *         description: Created
- */
 authRouter.post("/register", register);
-
-/**
- * @openapi
- * /api/auth/login:
- *   post:
- *     summary: Login with username/password
- *     tags: [Auth]
- */
 authRouter.post("/login", login);
-
-/**
- * @openapi
- * /api/auth/refresh:
- *   post:
- *     summary: Refresh access token
- *     tags: [Auth]
- */
 authRouter.post("/refresh", refresh);
-
-/**
- * @openapi
- * /api/auth/logout:
- *   post:
- *     summary: Logout and revoke refresh token
- *     tags: [Auth]
- */
 authRouter.post("/logout", logout);
 
 authRouter.get(
