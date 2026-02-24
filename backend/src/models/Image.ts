@@ -17,7 +17,6 @@ const imageSchema = new Schema(
   { timestamps: true }
 );
 
-// Add indexes for better search performance
 imageSchema.index({ description: "text", originalName: "text" });
 imageSchema.index({ tags: 1 });
 imageSchema.index({ uploadedBy: 1 });

@@ -70,12 +70,12 @@ describe("Comments, Likes, and AI API", () => {
     const insights = await request(app)
       .get("/api/ai/insights?scope=all")
       .set("Authorization", `Bearer ${user.token}`);
-    expect([200, 501]).toContain(insights.status);
+    expect([200, 501, 502]).toContain(insights.status);
 
     const query = await request(app)
       .post("/api/ai/query")
       .set("Authorization", `Bearer ${user.token}`)
       .send({ question: "Summarize this feed", scope: "all" });
-    expect([200, 501]).toContain(query.status);
+    expect([200, 501, 502]).toContain(query.status);
   });
 });

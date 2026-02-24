@@ -58,7 +58,6 @@ authRouter.post("/refresh", refresh);
  */
 authRouter.post("/logout", logout);
 
-// Google OAuth routes
 authRouter.get(
   "/google",
   passport.authenticate("google", {
