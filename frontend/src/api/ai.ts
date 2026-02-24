@@ -24,8 +24,9 @@ export const getFeedInsights = async (scope: "all" | "mine"): Promise<AiInsights
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: "Failed to fetch AI insights" }));
-    throw new Error(error.message || "Failed to fetch AI insights");
+    const error = await res.json().catch(() => ({}));
+    const detail = error.details ? `: ${error.details}` : "";
+    throw new Error(error.message ? `${error.message}${detail}` : "Failed to fetch AI insights");
   }
 
   return res.json();
@@ -45,8 +46,9 @@ export const askFeedQuestion = async (
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: "Failed to query AI" }));
-    throw new Error(error.message || "Failed to query AI");
+    const error = await res.json().catch(() => ({}));
+    const detail = error.details ? `: ${error.details}` : "";
+    throw new Error(error.message ? `${error.message}${detail}` : "Failed to query AI");
   }
 
   return res.json();

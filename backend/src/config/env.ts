@@ -24,5 +24,6 @@ export const env = {
   googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL ?? "",
   sessionSecret: process.env.SESSION_SECRET ?? "replace_me",
   geminiApiKey: process.env.GEMINI_API_KEY ?? "",
-  geminiModel: process.env.GEMINI_MODEL ?? "gemini-1.5-flash"
+  geminiModel: process.env.GEMINI_MODEL ?? "gemini-flash-latest",
+  aiRequestsPerMinute: Number(process.env.AI_MAX_REQUESTS_PER_MINUTE ?? "6")
 };
