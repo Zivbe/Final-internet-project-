@@ -28,7 +28,6 @@ export const createApp = () => {
   app.use(express.json());
   app.use(cookieParser());
   
-  // Serve uploaded images statically
   app.use("/uploads", express.static("uploads"));
 
   app.use(

@@ -85,9 +85,7 @@ export const logout = async (req: Request, res: Response) => {
     try {
       const payload = verifyRefreshToken(token);
       await revokeRefreshToken(payload.sub, token);
-    } catch {
-      // ignore token errors on logout
-    }
+    } catch {}
   }
 
   res.clearCookie("refreshToken", clearRefreshCookieOptions).status(204).send();
