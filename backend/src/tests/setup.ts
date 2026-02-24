@@ -9,6 +9,9 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
+  if (!mongoose.connection.db) {
+    return;
+  }
   const collections = await mongoose.connection.db.collections();
   for (const collection of collections) {
     await collection.deleteMany({});

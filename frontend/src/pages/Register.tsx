@@ -21,32 +21,37 @@ export const RegisterPage = () => {
   };
 
   return (
-    <div>
-      <h1>Create account</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Username
-          <input
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-            autoComplete="username"
-          />
-        </label>
-        <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            autoComplete="new-password"
-          />
-        </label>
-        {error ? <p>{error}</p> : null}
-        <button type="submit">Register</button>
-      </form>
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+    <div className="auth-page">
+      <div className="auth-card">
+        <h1>Create account</h1>
+        <p className="auth-subtitle">Join and start sharing your images.</p>
+        <form onSubmit={handleSubmit} className="auth-form">
+          <label>
+            Username
+            <input
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              autoComplete="username"
+            />
+          </label>
+          <label>
+            Password
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="new-password"
+            />
+          </label>
+          {error ? <p className="form-error">{error}</p> : null}
+          <button type="submit" className="btn btn-primary">
+            Register
+          </button>
+        </form>
+        <p className="auth-switch">
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
+      </div>
     </div>
   );
 };
