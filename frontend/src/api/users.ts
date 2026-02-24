@@ -18,6 +18,24 @@ export const getMyProfile = async (): Promise<User & { createdAt: string }> => {
   return res.json();
 };
 
+export const updateMyProfile = async (
+  data: { username: string }
+): Promise<{ message: string; user: User & { createdAt: string } }> => {
+  const res = await fetch(`${API_URL}/me`, {
+    method: "PATCH",
+    headers: {
+      ...getAuthHeaders(),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ message: "Failed to update profile" }));
+    throw new Error(error.message || "Failed to update profile");
+  }
+  return res.json();
+};
+
 export const getUserProfile = async (
   userId: string,
   page = 1,

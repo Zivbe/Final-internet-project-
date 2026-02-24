@@ -15,6 +15,12 @@ const refreshCookieOptions = {
   maxAge: 1000 * 60 * 60 * 24 * 7
 };
 
+const clearRefreshCookieOptions = {
+  httpOnly: true,
+  sameSite: "lax" as const,
+  secure: env.nodeEnv === "production"
+};
+
 export const register = async (req: Request, res: Response) => {
   const { username, password } = req.body as {
     username?: string;
@@ -84,5 +90,5 @@ export const logout = async (req: Request, res: Response) => {
     }
   }
 
-  res.clearCookie("refreshToken", refreshCookieOptions).status(204).send();
+  res.clearCookie("refreshToken", clearRefreshCookieOptions).status(204).send();
 };

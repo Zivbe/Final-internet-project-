@@ -17,7 +17,7 @@ This checklist is tailored to your constraints:
    - database: `final_internet`
    - role: `readWrite`
 4. Use a protected URI in backend `.env`:
-   - `MONGO_URI=mongodb://<mongo_user>:<mongo_password>@127.0.0.1:27017/final_internet?authSource=admin`
+   - `MONGO_URI=mongodb://final_app_user:MyNewStrongPass123!@#@127.0.0.1:27017/final_internet?authSource=admin`
 
 ## 2) Backend production mode
 

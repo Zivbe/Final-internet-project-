@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { API_BASE_URL } from "../config";
 import type { Image } from "../api/images";
-import { getMyProfile, getUserProfile, updateMyPhoto } from "../api/users";
+import {
+  getUserProfile,
+  updateMyPhoto,
+  updateMyProfile as updateMyProfileApi
+} from "../api/users";
 import { useAuth } from "../context/AuthContext";
 
 const toAssetUrl = (url: string) =>
@@ -18,6 +22,7 @@ export const ProfilePage = () => {
   const [canEdit, setCanEdit] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
 
   const targetUserId = userId === "me" || !userId ? user?.id : userId;
@@ -30,6 +35,7 @@ export const ProfilePage = () => {
     setPage(targetPage);
     setHasMore(targetPage < data.pagination.pages);
     setCanEdit(data.canEdit);
+    setUsername(data.user.username);
   };
 
   useEffect(() => {
@@ -53,9 +59,33 @@ export const ProfilePage = () => {
           user: { ...user, photoUrl: result.user.photoUrl }
         });
       }
-      await getMyProfile();
       setPhotoFile(null);
       setStatus("Profile photo updated.");
+    } catch (err) {
+      setStatus((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateUsername = async () => {
+    if (!accessToken) return;
+    const nextName = username.trim();
+    if (!nextName) {
+      setStatus("Username cannot be empty.");
+      return;
+    }
+    try {
+      setLoading(true);
+      const result = await updateMyProfileApi({ username: nextName });
+      setProfile((prev) => (prev ? { ...prev, username: result.user.username } : prev));
+      if (user) {
+        setSession({
+          accessToken,
+          user: { ...user, username: result.user.username }
+        });
+      }
+      setStatus("Username updated.");
     } catch (err) {
       setStatus((err as Error).message);
     } finally {
@@ -87,6 +117,19 @@ export const ProfilePage = () => {
             <input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
             <button type="button" className="btn btn-primary" onClick={handleUpdatePhoto} disabled={loading}>
               Update photo
+            </button>
+          </div>
+        ) : null}
+        {canEdit ? (
+          <div className="owner-actions">
+            <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleUpdateUsername}
+              disabled={loading}
+            >
+              Update username
             </button>
           </div>
         ) : null}

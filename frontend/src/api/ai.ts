@@ -13,6 +13,11 @@ export type AiInsights = {
   suggestedTags: string[];
 };
 
+export type AiQueryResult = {
+  answer: string;
+  usedPosts: number;
+};
+
 export const getFeedInsights = async (scope: "all" | "mine"): Promise<AiInsights> => {
   const res = await fetch(`${API_URL}/insights?scope=${scope}`, {
     headers: getAuthHeaders()
@@ -21,6 +26,27 @@ export const getFeedInsights = async (scope: "all" | "mine"): Promise<AiInsights
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: "Failed to fetch AI insights" }));
     throw new Error(error.message || "Failed to fetch AI insights");
+  }
+
+  return res.json();
+};
+
+export const askFeedQuestion = async (
+  question: string,
+  scope: "all" | "mine"
+): Promise<AiQueryResult> => {
+  const res = await fetch(`${API_URL}/query`, {
+    method: "POST",
+    headers: {
+      ...getAuthHeaders(),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ question, scope })
+  });
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ message: "Failed to query AI" }));
+    throw new Error(error.message || "Failed to query AI");
   }
 
   return res.json();
